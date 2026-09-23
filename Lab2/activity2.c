@@ -1,7 +1,34 @@
 #include <raylib.h>
 #include <stdlib.h>
 
-// A rectangle and its colour, bundled so the gun is one value.
+/* The blue bullet is a four frame spin animation on the bottom left of the sheet.
+ * The frames sit in a row at a fixed stride, so one macro covers all of them.
+ */
+#define BULLET_SIZE   16
+#define BULLET_FRAMES 4
+#define BULLET_STRIDE 19
+#define BULLET_ORIGIN_X 16
+#define BULLET_ORIGIN_Y 121
+
+#define BULLET_FRAME(i) ((Rectangle){BULLET_ORIGIN_X + BULLET_STRIDE * (i), \
+                                     BULLET_ORIGIN_Y, BULLET_SIZE, BULLET_SIZE})
+
+/* The gun sprite is 199 by 80 and already faces right, so it is drawn whole.
+ * It sits flush with the bottom of the window, and its muzzle opening is the
+ * gap on the right hand edge, centred 14 pixels down from the sprite's top.
+ */
+#define GUN_WIDTH    199
+#define GUN_HEIGHT   80
+#define GUN_MUZZLE_Y 14
+
+/* How far below the gun's top edge a bullet is drawn. The muzzle opening is
+ * centred on GUN_MUZZLE_Y, and a bullet is drawn from its own top left corner,
+ * so half the sprite comes back off to centre it on the barrel.
+ */
+#define BULLET_OFFSET_Y (GUN_MUZZLE_Y - BULLET_SIZE / 2)
+
+// A rectangle and its colour, bundled so the gun is one val_xue.
+// NOTE: no longer used, can delete
 typedef struct ColorRect {
   int pos_x;
   int pos_y;
@@ -10,24 +37,25 @@ typedef struct ColorRect {
   Color color;
 } ColorRect;
 
-/* Doubly linked list of bullets in flight. val is the bullet's x position.
+/* Doubly linked list of bullets in flight. val_x is the bullet's x position.
  *
  * You may be wondering why I chose a DLL.
  * I needed two things:
  *  - keep an dynamic number of bullets in memory
  *  - be able to remove any bullet, as the gun position can change,
- *    meaning that bullet 1 might have a smaller x value than bullet 2
+ *    meaning that bullet 1 might have a smaller x val_xue than bullet 2
  *
  * A DLL keeps the size dynamic. I can't use a queue, since because of point 2
  * the bullet's x positions aren't specifically in order, so I can't assume that
- * the removal of bullets will follow a FIFO order.
+ * the removal_x of bullets will follow a FIFO order.
  *
  * I could have made a map. Problem is, I don't know how to make a map in C.
  * I've done more than my fair share of prolog-style list exercises in C, so I
  * chose what I know.
  */
 typedef struct BulletList {
-  int val;
+  int val_x;
+  int val_y;
   int hasNext;
   int hasPrev;
   struct BulletList* next;
@@ -38,35 +66,47 @@ typedef struct BulletList {
 // maybe a list of 'Entities' where the list records a Vector2 of position, and a link to the sprite?
 // or I could actually be a good programmer and figure out a map.
 
-static void fireGun ();
-static void drawBullet (int pos_x);
-static BulletList* createEmptyBullet ();
-static BulletList* remove (BulletList* bullet);
-static void append (BulletList* list, BulletList* add);
+//static void fireGun ();
+static void drawGun                   (int pos_y, Texture2D texture);
+static void drawBullet                (Vector2 position, Texture2D texture, int state);
+static BulletList* createEmptyBullet  ();
+static BulletList* remove             (BulletList* bullet);
+static void append                    (BulletList* list, BulletList* add);
 
 int main (void) {
 
   const int height = 600;
   const int width = 800;
 
+  int rectPos_y = 0;
+
+  // was used as a placeholder for the gun sprite, now will be used for window maths
+  const ColorRect rect = (ColorRect){0, 0, 199, 80, RED};
+
+
   // Dummy head, never drawn, so the list always has something to append to.
   BulletList* bulletsDummy = createEmptyBullet();
 
   InitWindow(width, height, "Lab 2: cojo0003");
 
+  Texture2D gun = LoadTexture("../assets/Lasergewehr.png");
+  Image sheet = LoadImage("../assets/BulletCollection.png");
+
+  // Repaint the sheet's black backdrop to match the window, so the sprites blend in.
+  ImageColorReplace(&sheet, BLACK, DARKGRAY);
+  Texture2D bulletSheet = LoadTextureFromImage(sheet);
+  UnloadImage(sheet);
+
   SetTargetFPS(60);
 
-  const ColorRect rect = (ColorRect){0, 0, 200, 50, RED};
-  const int rectPos_Y = 550;
-  int rectPos_X = 0;
 
   while (!WindowShouldClose()) {
 
-    // Take away 100 so that the mouse is in the center of the rectangle, not the corner.
-    rectPos_X = GetMouseX() - 100;
+    // Take away 40 so that the mouse is in the center of the gun, not the corner.
+    rectPos_y = GetMouseY() - 40;
 
-    if (rectPos_X > width - rect.width) { rectPos_X = width - rect.width; } 
-    else if (rectPos_X < 0) { rectPos_X = 0; }
+    if (rectPos_y > height - rect.height) { rectPos_y = height - rect.height; }
+    else if (rectPos_y < 0) { rectPos_y = 0; }
 
     // H toggles the cursor.
     if (IsKeyPressed(KEY_H)) {
@@ -77,13 +117,13 @@ int main (void) {
     // Left click spawns a bullet at the current mouse position.
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
       BulletList* newBullet = createEmptyBullet();
-      newBullet->val = GetMouseX();
+      newBullet->val_x = rect.width;
+      newBullet->val_y = rectPos_y + BULLET_OFFSET_Y;
       append(bulletsDummy, newBullet);
     }
 
     BeginDrawing(); {
-      ClearBackground(RAYWHITE);
-      DrawRectangle(rectPos_X, rectPos_Y, rect.width, rect.height, rect.color);
+      ClearBackground(DARKGRAY);
 
       // Move every bullet along, dropping the ones that have left the screen.
       // cur trails one behind, so remove() relinks it onto the next bullet for us.
@@ -91,13 +131,17 @@ int main (void) {
       while (cur->hasNext) {
 
         BulletList* bullet = cur->next;
-        bullet->val += 5;
-        if (bullet->val >= width) { free(remove(bullet)); }
+        bullet->val_x += 5;
+        if (bullet->val_x >= width) { free(remove(bullet)); }
         else {
-          drawBullet(bullet->val);
+          // Advance one spin frame every 10 pixels of travel, so the bullet turns as it flies.
+          int state = (bullet->val_x / 20) % BULLET_FRAMES;
+          drawBullet((Vector2){bullet->val_x, bullet->val_y}, bulletSheet, state);
           cur = bullet;
         }
       }
+
+      drawGun(rectPos_y, gun);
 
     } EndDrawing();
   }
@@ -106,25 +150,38 @@ int main (void) {
   while (bulletsDummy->hasNext) { free(remove(bulletsDummy->next)); }
   free(bulletsDummy);
 
+  UnloadTexture(gun);
+  UnloadTexture(bulletSheet);
+
   CloseWindow();
 
   return 0;
 }
 
-// Draws a single bullet at the given x position.
-static void drawBullet (int pos_x) {
-  DrawRectangle (pos_x+100, 575, 100, 50, BLACK);
+// Draws the gun at the given x position, resting on the bottom of the window.
+static void drawGun (int pos_y, Texture2D texture) {
+  DrawTexture(texture, 0, pos_y, WHITE);
+}
+
+// Draws a single bullet at the given x position, with state choosing the spin frame.
+static void drawBullet (Vector2 position, Texture2D texture, int state) {
+
+  // Guard the index so a state from outside the animation cannot read the wrong sprite.
+  const int frame = ((state % BULLET_FRAMES) + BULLET_FRAMES) % BULLET_FRAMES;
+
+  DrawTextureRec(texture, BULLET_FRAME(frame), position, WHITE);
 }
 
 // Allocates a blank unlinked node. Returns NULL if out of memory.
 static BulletList* createEmptyBullet () {
   BulletList* out = malloc(sizeof(BulletList));
   if (out == NULL) { return NULL; }
-  out -> val = -1;
-  out -> hasNext = 0;
-  out -> hasPrev = 0;
-  out -> next = NULL;
-  out -> prev = NULL;
+  out->val_x = -1;
+  out->val_y = -1;
+  out->hasNext = 0;
+  out->hasPrev = 0;
+  out->next = NULL;
+  out->prev = NULL;
   return out;
 }
 
