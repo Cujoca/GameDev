@@ -1,4 +1,4 @@
-#include "./tiles.h"
+#include "tiles.h"
 
 #include <stdio.h>
 #include <string.h>
