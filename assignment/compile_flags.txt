@@ -1,0 +1,5 @@
+-I.
+-Iinclude
+-Isrc/common
+-std=c11
+-Wall

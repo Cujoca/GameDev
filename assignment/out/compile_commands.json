@@ -1,0 +1,32 @@
+[
+{
+  "directory": "/Users/andrei/School/GameDev/assignment/out",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED -I/Users/andrei/School/GameDev/assignment -I/Users/andrei/School/GameDev/assignment/Libs -isystem /opt/homebrew/include -g -std=gnu11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/System/Library/Frameworks  -Wall -Wextra -o CMakeFiles/game.dir/Core/game.c.o -c /Users/andrei/School/GameDev/assignment/Core/game.c",
+  "file": "/Users/andrei/School/GameDev/assignment/Core/game.c",
+  "output": "CMakeFiles/game.dir/Core/game.c.o"
+},
+{
+  "directory": "/Users/andrei/School/GameDev/assignment/out",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED -I/Users/andrei/School/GameDev/assignment -I/Users/andrei/School/GameDev/assignment/Libs -isystem /opt/homebrew/include -g -std=gnu11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/System/Library/Frameworks  -Wall -Wextra -o CMakeFiles/game.dir/Core/menu.c.o -c /Users/andrei/School/GameDev/assignment/Core/menu.c",
+  "file": "/Users/andrei/School/GameDev/assignment/Core/menu.c",
+  "output": "CMakeFiles/game.dir/Core/menu.c.o"
+},
+{
+  "directory": "/Users/andrei/School/GameDev/assignment/out",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED -I/Users/andrei/School/GameDev/assignment -I/Users/andrei/School/GameDev/assignment/Libs -isystem /opt/homebrew/include -g -std=gnu11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/System/Library/Frameworks  -Wall -Wextra -o CMakeFiles/game.dir/Core/play.c.o -c /Users/andrei/School/GameDev/assignment/Core/play.c",
+  "file": "/Users/andrei/School/GameDev/assignment/Core/play.c",
+  "output": "CMakeFiles/game.dir/Core/play.c.o"
+},
+{
+  "directory": "/Users/andrei/School/GameDev/assignment/out",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED -I/Users/andrei/School/GameDev/assignment -I/Users/andrei/School/GameDev/assignment/Libs -isystem /opt/homebrew/include -g -std=gnu11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/System/Library/Frameworks  -Wall -Wextra -o CMakeFiles/game.dir/Libs/map.c.o -c /Users/andrei/School/GameDev/assignment/Libs/map.c",
+  "file": "/Users/andrei/School/GameDev/assignment/Libs/map.c",
+  "output": "CMakeFiles/game.dir/Libs/map.c.o"
+},
+{
+  "directory": "/Users/andrei/School/GameDev/assignment/out",
+  "command": "/usr/bin/cc -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -DUSE_LIBTYPE_SHARED -I/Users/andrei/School/GameDev/assignment -I/Users/andrei/School/GameDev/assignment/Libs -isystem /opt/homebrew/include -g -std=gnu11 -arch arm64 -F/Library/Developer/CommandLineTools/SDKs/MacOSX26.sdk/System/Library/Frameworks  -Wall -Wextra -o CMakeFiles/game.dir/Libs/tiles.c.o -c /Users/andrei/School/GameDev/assignment/Libs/tiles.c",
+  "file": "/Users/andrei/School/GameDev/assignment/Libs/tiles.c",
+  "output": "CMakeFiles/game.dir/Libs/tiles.c.o"
+}
+]

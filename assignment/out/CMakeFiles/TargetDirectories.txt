@@ -1,0 +1,3 @@
+/Users/andrei/School/GameDev/assignment/out/CMakeFiles/game.dir
+/Users/andrei/School/GameDev/assignment/out/CMakeFiles/edit_cache.dir
+/Users/andrei/School/GameDev/assignment/out/CMakeFiles/rebuild_cache.dir

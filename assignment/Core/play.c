@@ -2,5 +2,7 @@
 
 Entity* makePlayer () {
   Entity* out = (Entity*)malloc(sizeof(Entity));
-  out->
+  return out;
 }
+
+
